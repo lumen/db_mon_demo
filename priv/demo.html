@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Demo</title>
+  <script>
+
+    function injectBody(wire) {
+      clearBody();
+
+      domAst = JSON.parse(wire);
+      walk(domAst, document.body);
+    }
+
+    function walk(node, parent) {
+      if (node[0] === 'element') { walkElement(node, parent); }
+      if (node[0] === 'text') { walkText(node, parent); }
+    }
+
+    function walkElement([type, tagName, attributes, children], parent) {
+      let element = document.createElement(tagName);
+      setAttributes(element, attributes);
+      for (let i = 0; i < children.length; i++) {
+        walk(children[i], element);
+      }
+      parent.appendChild(element);
+    }
+
+    function walkText([type, value], parent) {
+      let textNode = document.createTextNode(value);
+      parent.appendChild(textNode);
+    }
+
+    function setAttributes(element, attributes) {
+      for (let i = 0; i < attributes.length; i++) {
+        [type, name, value] = attributes[i];
+        element.setAttribute(name, value);
+      }
+    }
+
+    function clearBody() {
+      let children = document.body.children;
+
+      for (let child of children) {
+        document.body.removeChild(child);
+      }
+    }
+  </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
