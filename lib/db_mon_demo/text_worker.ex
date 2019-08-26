@@ -7,7 +7,6 @@ defmodule DbMonDemo.TextWorker do
 
   def init({value, parent}) do
     document = GenServer.call(DbMonDemo.DocumentSupervisor, :document)
-
     {:ok, element} = Lumen.Web.Document.create_text_node(document, value)
     {:ok, element} = Lumen.Web.Node.append_child(parent, element)
 

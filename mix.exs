@@ -22,7 +22,8 @@ defmodule TemplateDemo.MixProject do
   defp deps do
     [
       {:sweet_xml, "~> 0.6.6"},
-      {:jason, "~> 1.1.2"}
+      {:jason, "~> 1.1.2"},
+      {:floki, "~> 0.22.0"}
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
   end

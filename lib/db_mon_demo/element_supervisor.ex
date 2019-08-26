@@ -11,32 +11,36 @@ defmodule DbMonDemo.ElementSupervisor do
 
     children = build_children_from_ast(ast, element)
 
-    {:ok, children, [element: element, ast: ast]}
-  end
-
-  def build_children_from_ast([], _element), do: []
-
-  def build_children_from_ast([node | nodes], element) do
-    [build_child_from_node(node, element) | build_children_from_ast(nodes, element)]
-  end
-
-  def build_child_from_node([:element, tag_name, attributes, children], element) do
-    {DbMonDemo.ElementSupervisor, {tag_name, attributes, children, element}}
-  end
-
-  def build_child_from_node([:text, value], element) do
-    {DbMonDemo.TextWorker, {value, element}}
+    {:ok, children, [element: element, tag_name: tag_name, ast: ast]}
   end
 
   defp init_element(tag_name, attributes) do
     document = GenServer.call(DbMonDemo.DocumentSupervisor, :document)
     {:ok, element} = Lumen.Web.Document.create_element(document, tag_name)
 
-    Enum.each(attributes, fn [:attribute, name, value] ->
+    Enum.each(attributes, fn {name, value} ->
       Lumen.Web.Element.set_attribute(element, name, value)
     end)
 
     {:ok, element}
+  end
+
+  def build_children_from_ast([], _parent), do: []
+
+  def build_children_from_ast([element | elements], parent) do
+    [build_child_from_node(element, parent) | build_children_from_ast(elements, parent)]
+  end
+
+  def build_children_from_ast(element, parent) when is_tuple(element) do
+    build_children_from_ast([element], parent)
+  end
+
+  def build_child_from_node({tag_name, attributes, children}, parent) do
+    {DbMonDemo.ElementSupervisor, {tag_name, attributes, children, parent}}
+  end
+
+  def build_child_from_node(value, parent) when is_binary(value) do
+    {DbMonDemo.TextWorker, {value, parent}}
   end
 
   def handle_call(:element, _from, state) do

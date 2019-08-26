@@ -1,0 +1,26 @@
+<div id="app">
+  <table class="table table-stripped latest-data">
+    <tbody>
+      <%= for row <- rows do %>
+      <tr>
+        <td class="dbname"><%= db_name(row) %></td>
+        <td class="query-count"></td>
+        <td class="time"></td>
+        <td class="time"></td>
+        <td class="time"></td>
+        <td class="time"></td>
+        <td class="time"></td>
+      </tr>
+      <tr>
+        <td class="dbname"><%= db_slave_name(row) %></td>
+        <td class="query-count"></td>
+        <td class="time"></td>
+        <td class="time"></td>
+        <td class="time"></td>
+        <td class="time"></td>
+        <td class="time"></td>
+      </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

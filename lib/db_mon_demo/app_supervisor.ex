@@ -5,7 +5,6 @@ defmodule DbMonDemo.AppSupervisor do
     Supervisor.start_link(__MODULE__, ast, name: __MODULE__)
   end
 
-  @spec init(any) :: {:ok, {%{intensity: any, period: any, strategy: any}, [any]}}
   def init(ast) do
     children = [
       {DbMonDemo.WindowSupervisor, ast}
