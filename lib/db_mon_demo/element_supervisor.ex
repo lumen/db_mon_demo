@@ -18,7 +18,7 @@ defmodule DbMonDemo.ElementSupervisor do
     document = GenServer.call(DbMonDemo.DocumentSupervisor, :document)
     {:ok, element} = Lumen.Web.Document.create_element(document, tag_name)
 
-    Enum.each(attributes, fn {name, value} ->
+    Enum.reduce(attributes, element, fn {name, value}, element ->
       Lumen.Web.Element.set_attribute(element, name, value)
     end)
 

@@ -58,6 +58,14 @@ defmodule DbMonDemo.Supervisor do
       end
 
       defp handle_msg(
+             {:"$gen_call", {to, tag} = from, :children},
+             {gen_mod, parent_proc, children, state}
+           ) do
+        send(to, {tag, Enum.map(children, &elem(&1, 0))})
+        loop(gen_mod, parent_proc, children, state)
+      end
+
+      defp handle_msg(
              {:"$gen_call", {to, tag} = from, msg},
              {gen_mod, parent_proc, children, state}
            ) do

@@ -1,9 +1,9 @@
 defmodule Lumen.Web.Window do
   def window() do
-    {:ok, []}
+    {:ok, ["window", []]}
   end
 
   def document(_window) do
-    {:ok, []}
+    {:ok, ["document", []]}
   end
 end

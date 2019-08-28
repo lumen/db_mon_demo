@@ -1,13 +1,13 @@
 defmodule Lumen.Web.Document do
-  def create_element(_docuemnt, _tag_name) do
-    {:ok, []}
+  def create_element(_docuemnt, tag_name) do
+    {:ok, [tag_name, []]}
   end
 
-  def create_text_node(_document, _value) do
-    {:ok, []}
+  def create_text_node(_document, value) do
+    {:ok, [value]}
   end
 
   def body(_document) do
-    {:ok, []}
+    {:ok, ["body", []]}
   end
 end
