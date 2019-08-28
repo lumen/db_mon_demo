@@ -10,14 +10,19 @@ defmodule DbMonDemo.BodySupervisor do
     document = GenServer.call(DbMonDemo.DocumentSupervisor, :document)
     {:ok, body} = Lumen.Web.Document.body(document)
 
-    children = build_children_from_ast(ast, body)
+    children = build_children_from_ast(ast, 0)
 
     {:ok, children, [body: body, ast: ast]}
   end
 
+  def handle_call(:element, _from, state) do
+    body = Keyword.get(state, :body)
+    {:reply, body, state}
+  end
+
   def handle_call(:body, _from, state) do
-    document = Keyword.get(state, :body)
-    {:reply, document, state}
+    body = Keyword.get(state, :body)
+    {:reply, body, state}
   end
 
   def handle_call(:ast, _from, state) do

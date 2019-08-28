@@ -13,7 +13,7 @@ defmodule DbMonDemo.Supervisor do
 
       def init_it(gen_mod, parent_proc, args) do
         {:ok, children, state} = apply(gen_mod, :init, [args])
-        # Process.flag(:trap_exit, true)
+        Process.flag(:trap_exit, true)
 
         child_list = sup_children(children)
 
@@ -50,7 +50,7 @@ defmodule DbMonDemo.Supervisor do
       end
 
       defp handle_msg(
-             {:system, {to, tag}, {:terminate, reason} = msg},
+             {:system, {to, tag}, {:terminate, reason}},
              {gen_mod, _parent_proc, _children, state}
            ) do
         send(to, {tag, :ok})
@@ -76,6 +76,14 @@ defmodule DbMonDemo.Supervisor do
         end
       end
 
+      defp handle_msg(
+             {:sup_children, children},
+             {gen_mod, parent_proc, _c, state}
+           ) do
+        child_list = sup_children(children)
+        loop(gen_mod, parent_proc, child_list, state)
+      end
+
       defp handle_msg({:EXIT, from, reason}, {gen_mod, parent_proc, children, state}) do
         case fetch_child_from_pid(children, from) do
           :error ->
@@ -83,7 +91,12 @@ defmodule DbMonDemo.Supervisor do
 
           {{_pid, mod, args}, index} ->
             {:ok, pid} = restart_child(mod, args)
-            children = insert_child_at(children, {pid, mod, args}, index)
+
+            children =
+              children
+              |> List.delete_at(index)
+              |> insert_child_at({pid, mod, args}, index)
+
             loop(gen_mod, parent_proc, children, state)
         end
       end
@@ -107,7 +120,6 @@ defmodule DbMonDemo.Supervisor do
 
   def start_link(gen_mod, args, opts \\ []) do
     pid = spawn_link(gen_mod, :init_it, [gen_mod, self(), args])
-
     name = Keyword.get(opts, :name)
 
     if name do

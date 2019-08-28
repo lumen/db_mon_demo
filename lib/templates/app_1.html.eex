@@ -1,4 +1,3 @@
 <div id="foo">
-  <p>Hello</p>
-  <h1>This is an example rendering from Lumen</h1>
+  <p class="query-count">Hello</p>
 </div>
