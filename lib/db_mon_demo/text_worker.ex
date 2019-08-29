@@ -3,6 +3,8 @@ defmodule DbMonDemo.TextWorker do
 
   import DbMonDemo.ElementSupervisor, only: [append_child: 3]
 
+  @framerate 15
+
   def start_link(args) do
     pid = spawn_link(__MODULE__, :init_it, [__MODULE__, self(), args])
 
@@ -68,7 +70,7 @@ defmodule DbMonDemo.TextWorker do
 
     case Lumen.Web.Element.get_class_name(parent_element) do
       class_name when class_name in ["time", "query-count"] ->
-        Process.send_after(self(), {:update_text, class_name}, 50)
+        Process.send_after(self(), {:update_text, class_name}, @framerate)
 
       _other ->
         nil
@@ -97,7 +99,7 @@ defmodule DbMonDemo.TextWorker do
 
   def handle_info({:update_text, "time"}, state) do
     element = Keyword.get(state, :element)
-    Process.send_after(self(), {:update_text, "time"}, 50)
+    Process.send_after(self(), {:update_text, "time"}, @framerate)
     new_value = Lumen.Web.Math.random_integer(1500) / 100
     Lumen.Web.Node.set_text_content(element, new_value)
     {:noreply, Keyword.put(state, :value, new_value)}
@@ -105,7 +107,7 @@ defmodule DbMonDemo.TextWorker do
 
   def handle_info({:update_text, "query-count"}, state) do
     element = Keyword.get(state, :element)
-    Process.send_after(self(), {:update_text, "query-count"}, 50)
+    Process.send_after(self(), {:update_text, "query-count"}, @framerate)
     new_value = Lumen.Web.Math.random_integer(10)
     Lumen.Web.Node.set_text_content(element, new_value)
     {:noreply, Keyword.put(state, :value, new_value)}
